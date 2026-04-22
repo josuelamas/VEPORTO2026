@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acceso · Portal VEPORTO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e10;
+    --bg-1: #141619;
+    --bg-2: #1a1d21;
+    --bg-3: #22262b;
+    --border: #2a2e34;
+    --border-soft: #1f2328;
+    --border-strong: #353a42;
+    --text: #ffffff;
+    --text-2: #ffffff;
+    --text-3: #e8e4dc;
+    --text-4: #a39e92;
+    --accent: #E8283A;
+    --accent-hover: #F53545;
+    --accent-soft: rgba(232, 40, 58, 0.12);
+    --accent-border: rgba(232, 40, 58, 0.3);
+    --accent-ink: #ffffff;
+    --pos: #6fc287;
+    --neg: #e27373;
+    --atmosphere-1: rgba(232,40,58,0.08);
+    --atmosphere-2: rgba(106,165,224,0.04);
+    --atmosphere-3: rgba(232,40,58,0.04);
+    --grid-lines: rgba(255,255,255,0.015);
+  }
+
+  :root[data-theme="light"] {
+    --bg: #faf8f4;
+    --bg-1: #ffffff;
+    --bg-2: #f3f0e9;
+    --bg-3: #eae5d8;
+    --border: #d8d3c5;
+    --border-soft: #e8e4d8;
+    --border-strong: #c4beb0;
+    --text: #1a1815;
+    --text-2: #4a4742;
+    --text-3: #7a766e;
+    --text-4: #aba69b;
+    --accent: #D91E2F;
+    --accent-hover: #C41827;
+    --accent-soft: rgba(217, 30, 47, 0.08);
+    --accent-border: rgba(217, 30, 47, 0.3);
+    --accent-ink: #ffffff;
+    --pos: #2c8a4a;
+    --neg: #b83030;
+    --atmosphere-1: rgba(217,30,47,0.05);
+    --atmosphere-2: rgba(42,111,184,0.03);
+    --atmosphere-3: rgba(217,30,47,0.03);
+    --grid-lines: rgba(20,18,15,0.025);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { transition: background-color 0.25s ease; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.005em;
+    overflow-x: hidden;
+    min-height: 100vh;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 30% 20%, var(--atmosphere-1), transparent 60%),
+      radial-gradient(ellipse 600px 500px at 80% 80%, var(--atmosphere-2), transparent 60%),
+      radial-gradient(ellipse 400px 400px at 50% 110%, var(--atmosphere-3), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid-lines) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-lines) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 0%, transparent 75%);
+  }
+
+  .stamp {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--text-4);
+    z-index: 2;
+  }
+  .stamp .dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    margin-right: 6px;
+    vertical-align: middle;
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .theme-toggle {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    width: 34px; height: 34px;
+    border: 1px solid var(--border-soft);
+    border-radius: 8px;
+    color: var(--text-2);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    transition: all 0.15s ease;
+    z-index: 3;
+    background: var(--bg-1);
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent-border); }
+  .theme-toggle svg { transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.3,1.5,0.5,1); position: absolute; top: 50%; left: 50%; }
+  :root[data-theme="dark"] .theme-toggle .sun { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
+  :root[data-theme="dark"] .theme-toggle .moon { opacity: 0; transform: translate(-50%, -50%) rotate(90deg); }
+  :root[data-theme="light"] .theme-toggle .sun { opacity: 0; transform: translate(-50%, -50%) rotate(-90deg); }
+  :root[data-theme="light"] .theme-toggle .moon { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); }
+
+  .copyright {
+    position: fixed;
+    bottom: 16px;
+    right: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--text-4);
+    z-index: 2;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 60px 20px 40px;
+  }
+
+  .login {
+    width: 100%;
+    max-width: 420px;
+    animation: fadeUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .brand {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .brand-logo {
+    height: 60px;
+    width: auto;
+    display: block;
+    margin: 0 auto 14px;
+    color: var(--text);
+  }
+  .brand-logo .logo-dots circle { fill: var(--accent); }
+  .brand-logo .logo-text {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    fill: currentColor;
+    letter-spacing: -0.03em;
+  }
+
+  .brand-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+  }
+
+  .card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 26px 24px;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 1px 0 rgba(255,255,255,0.04) inset;
+  }
+  :root[data-theme="light"] .card {
+    box-shadow: 0 8px 24px rgba(20,18,15,0.08), 0 2px 6px rgba(20,18,15,0.04);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 24px; right: 24px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent);
+    opacity: 0.4;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--text-3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-soft);
+  }
+
+  .users {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .user-btn {
+    padding: 14px 10px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-2);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .user-btn:hover {
+    background: var(--bg-3);
+    border-color: var(--border-strong);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+
+  .user-btn.selected {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .user-btn .u-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 6px;
+    font-family: 'IBM Plex Serif', serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--text-2);
+    transition: all 0.15s ease;
+    border: 1px solid var(--border-soft);
+  }
+
+  .user-btn.selected .u-avatar {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+
+  .user-btn .u-name {
+    display: block;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .field {
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 12px 42px 12px 14px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.15s ease;
+    letter-spacing: 0.08em;
+  }
+
+  .field-input::placeholder {
+    color: var(--text-4);
+    letter-spacing: 0.02em;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+    background: var(--bg-1);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .field-input.error {
+    border-color: var(--neg);
+    animation: shake 0.4s cubic-bezier(0.3, 0.8, 0.3, 1);
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .field-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-3);
+    cursor: pointer;
+    padding: 4px;
+    display: grid;
+    place-items: center;
+    border-radius: 4px;
+    transition: color 0.15s ease;
+  }
+  .field-toggle:hover { color: var(--text); }
+
+  .submit {
+    width: 100%;
+    padding: 13px 20px;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: var(--accent-ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+  }
+
+  .submit:hover:not(:disabled) {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px var(--accent-soft);
+  }
+
+  .submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .submit .arrow { transition: transform 0.15s ease; }
+  .submit:hover:not(:disabled) .arrow { transform: translateX(3px); }
+
+  .submit .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: var(--accent-ink);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .msg {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.02em;
+    text-align: center;
+    background: rgba(226,115,115,0.08);
+    border: 1px solid rgba(226,115,115,0.25);
+    color: var(--neg);
+    display: none;
+  }
+  .msg.show { display: block; animation: fadeUp 0.3s ease; }
+  .msg.success {
+    background: rgba(111,194,135,0.08);
+    border-color: rgba(111,194,135,0.25);
+    color: var(--pos);
+  }
+
+  .hint {
+    margin-top: 22px;
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.8;
+  }
+  .hint span { color: var(--text-3); }
+
+  @media (max-width: 480px) {
+    .stamp { font-size: 9px; letter-spacing: 0.14em; }
+    .copyright { font-size: 9px; letter-spacing: 0.1em; left: 20px; right: auto; }
+    .brand-logo { height: 48px; }
+    .brand-sub { font-size: 10px; letter-spacing: 0.2em; }
+    .card { padding: 22px 18px; }
+    .user-btn { padding: 12px 6px; }
+    .user-btn .u-name { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stamp"><span class="dot"></span>Portal privado · Acceso autorizado</div>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Cambiar tema">
+  <svg class="sun" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M8 1.5v2M8 12.5v2M14.5 8h-2M3.5 8h-2M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4M12.6 12.6l-1.4-1.4M4.8 4.8L3.4 3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <svg class="moon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M13.5 9.5A6 6 0 017 3a6 6 0 00-1 11.8A6 6 0 0013.5 9.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<div class="wrap">
+  <div class="login">
+
+    <div class="brand">
+      <svg class="brand-logo" viewBox="0 0 240 60" xmlns="http://www.w3.org/2000/svg" aria-label="VEPORTO">
+        <g class="logo-dots">
+          <circle cx="12" cy="18" r="9"/>
+          <circle cx="12" cy="42" r="9"/>
+          <circle cx="32" cy="12" r="3"/>
+          <circle cx="32" cy="30" r="3"/>
+          <circle cx="32" cy="48" r="3"/>
+        </g>
+        <text x="50" y="42" class="logo-text" font-size="34">VEPORTO</text>
+      </svg>
+      <div class="brand-sub">Portal</div>
+    </div>
+
+    <div class="card">
+
+      <div class="section-label">Usuario</div>
+      <div class="field">
+        <input type="text" class="field-input" id="username" placeholder="Nombre de usuario" autocomplete="username" autocapitalize="characters" spellcheck="false">
+      </div>
+
+      <div class="section-label">Contraseña</div>
+      <div class="field">
+        <input type="password" class="field-input" id="password" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="field-toggle" id="toggle-pwd" title="Mostrar/ocultar">
+          <svg id="eye-open" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4"/>
+            <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
+          </svg>
+          <svg id="eye-closed" width="16" height="16" viewBox="0 0 16 16" fill="none" style="display:none">
+            <path d="M1 8s2.5-5 7-5 7 5 7 5M2 14l12-12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <button class="submit" id="btn-login">
+        <span id="btn-text">Entrar</span>
+        <span class="arrow" id="btn-arrow">→</span>
+      </button>
+
+      <div class="msg" id="msg"></div>
+
+    </div>
+
+    <div class="hint">
+      <span>Sesión única</span> · no se comparte entre dispositivos
+    </div>
+
+  </div>
+</div>
+
+<div class="copyright">VEPORTO · 2026</div>
+
+<script>
+/* ==========================================================
+   LOGIN — Portal VEPORTO
+   Para cambiar contraseñas: abre la consola (F12) y ejecuta
+   await hashPwd("nueva_contraseña") — luego pega el hash
+   resultante en la tabla USERS abajo.
+   ========================================================== */
+
+// ---------- THEME ----------
+const THEME_KEY = 'veporto_theme';
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  try { localStorage.setItem(THEME_KEY, t); } catch {}
+}
+function currentTheme() {
+  try { return localStorage.getItem(THEME_KEY) || 'dark'; } catch { return 'dark'; }
+}
+applyTheme(currentTheme());
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
+});
+
+// ---------- AUTH ----------
+const SALT = 'VEPORTO_2026_PORTAL';
+
+const USERS = {
+  "CARLOS":    "ae9f329c819535596f9545d758937d91bb95e49b37d3b5881cce7fdac26e802a",
+  "DARKO":     "79cf9b5f7c850193895b396baab288ef336880ebc67677121021688295fa55da",
+  "JOSE LUIS": "5b0a310a7f6f96665420dc3f24da23b1ba81e6c620b7d902b6ef72d24cc311b8"
+};
+
+window.hashPwd = async function(pwd) {
+  const input = SALT + pwd.toLowerCase().trim();
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+};
+
+let isLoading = false;
+
+function normalizeUser(input) {
+  const clean = input.toUpperCase().trim().replace(/\s+/g, ' ');
+  // Permitir "JOSELUIS" sin espacio como alias de "JOSE LUIS"
+  if (clean === 'JOSELUIS') return 'JOSE LUIS';
+  return clean;
+}
+
+document.getElementById('toggle-pwd').addEventListener('click', () => {
+  const input = document.getElementById('password');
+  const eo = document.getElementById('eye-open');
+  const ec = document.getElementById('eye-closed');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eo.style.display = 'none';
+    ec.style.display = 'block';
+  } else {
+    input.type = 'password';
+    eo.style.display = 'block';
+    ec.style.display = 'none';
+  }
+});
+
+const msgEl = document.getElementById('msg');
+function showMsg(text, isSuccess) {
+  msgEl.textContent = text;
+  msgEl.classList.toggle('success', !!isSuccess);
+  msgEl.classList.add('show');
+}
+function hideMsg() {
+  msgEl.classList.remove('show');
+}
+
+async function doLogin() {
+  if (isLoading) return;
+  const userEl = document.getElementById('username');
+  const pwdEl = document.getElementById('password');
+  const rawUser = userEl.value;
+  const pwd = pwdEl.value;
+
+  if (!rawUser.trim()) {
+    userEl.classList.add('error');
+    setTimeout(() => userEl.classList.remove('error'), 500);
+    showMsg('Ingrese el usuario');
+    userEl.focus();
+    return;
+  }
+  if (!pwd) {
+    pwdEl.classList.add('error');
+    setTimeout(() => pwdEl.classList.remove('error'), 500);
+    showMsg('Ingrese la contraseña');
+    pwdEl.focus();
+    return;
+  }
+
+  setLoading(true);
+  hideMsg();
+
+  const user = normalizeUser(rawUser);
+  const hash = await hashPwd(pwd);
+  const expected = USERS[user];
+
+  // Delay artificial para evitar ataques de timing
+  await new Promise(r => setTimeout(r, 400));
+
+  // Credenciales inválidas (usuario o contraseña): mensaje genérico
+  if (!expected || hash !== expected) {
+    setLoading(false);
+    userEl.classList.add('error');
+    pwdEl.classList.add('error');
+    pwdEl.value = '';
+    setTimeout(() => {
+      userEl.classList.remove('error');
+      pwdEl.classList.remove('error');
+    }, 500);
+    showMsg('Credenciales inválidas');
+    pwdEl.focus();
+    return;
+  }
+
+  sessionStorage.removeItem('veporto_auth'); // limpiar restos anteriores
+  localStorage.setItem('veporto_auth', JSON.stringify({ u: user, t: Date.now() }));
+  showMsg('Acceso concedido · redirigiendo…', true);
+  setTimeout(() => { window.location.replace('venta_semanal.html'); }, 500);
+}
+
+function setLoading(v) {
+  isLoading = v;
+  const btn = document.getElementById('btn-login');
+  const txt = document.getElementById('btn-text');
+  const arr = document.getElementById('btn-arrow');
+  btn.disabled = v;
+  if (v) {
+    txt.textContent = 'Verificando';
+    arr.outerHTML = '<span class="spinner" id="btn-arrow"></span>';
+  } else {
+    txt.textContent = 'Entrar';
+    const el = document.getElementById('btn-arrow');
+    if (el) el.outerHTML = '<span class="arrow" id="btn-arrow">→</span>';
+  }
+}
+
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('username').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    document.getElementById('password').focus();
+  }
+});
+document.getElementById('password').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// Autofocus en el campo usuario al cargar
+setTimeout(() => document.getElementById('username').focus(), 100);
+
+(function checkExistingAuth() {
+  const raw = localStorage.getItem('veporto_auth');
+  if (!raw) return;
+  try {
+    const s = JSON.parse(raw);
+    if (s && s.u && USERS[s.u]) {
+      // Verificar que no haya expirado (30 días)
+      if (Date.now() - s.t > 30 * 24 * 3600 * 1000) {
+        localStorage.removeItem('veporto_auth');
+        return;
+      }
+      window.location.replace('venta_semanal.html');
+    }
+  } catch {}
+})();
+</script>
+
+</body>
+</html>
