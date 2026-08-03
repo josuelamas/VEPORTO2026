@@ -624,32 +624,45 @@ async function doLogin() {
   setLoading(true);
   hideMsg();
 
-  const user = normalizeUser(rawUser);
-  const hash = await hashPwd(pwd);
-  const expected = USERS[user];
+  try {
+    if (!window.crypto || !window.crypto.subtle) {
+      throw new Error('NO_CRYPTO');
+    }
 
-  // Delay artificial para evitar ataques de timing
-  await new Promise(r => setTimeout(r, 400));
+    const user = normalizeUser(rawUser);
+    const hash = await hashPwd(pwd);
+    const expected = USERS[user];
 
-  // Credenciales inválidas (usuario o contraseña): mensaje genérico
-  if (!expected || hash !== expected) {
+    // Delay artificial para evitar ataques de timing
+    await new Promise(r => setTimeout(r, 400));
+
+    // Credenciales inválidas (usuario o contraseña): mensaje genérico
+    if (!expected || hash !== expected) {
+      setLoading(false);
+      userEl.classList.add('error');
+      pwdEl.classList.add('error');
+      pwdEl.value = '';
+      setTimeout(() => {
+        userEl.classList.remove('error');
+        pwdEl.classList.remove('error');
+      }, 500);
+      showMsg('Credenciales inválidas');
+      pwdEl.focus();
+      return;
+    }
+
+    sessionStorage.removeItem('veporto_auth'); // limpiar restos anteriores
+    localStorage.setItem('veporto_auth', JSON.stringify({ u: user, t: Date.now() }));
+    showMsg('Acceso concedido · redirigiendo…', true);
+    setTimeout(() => { window.location.replace('venta_semanal.html'); }, 500);
+  } catch (err) {
     setLoading(false);
-    userEl.classList.add('error');
-    pwdEl.classList.add('error');
-    pwdEl.value = '';
-    setTimeout(() => {
-      userEl.classList.remove('error');
-      pwdEl.classList.remove('error');
-    }, 500);
-    showMsg('Credenciales inválidas');
-    pwdEl.focus();
-    return;
+    const msg = (err && err.message === 'NO_CRYPTO')
+      ? 'Este navegador/conexión no permite iniciar sesión de forma segura (abre el sitio con https://).'
+      : 'Error inesperado al iniciar sesión. Intenta de nuevo.';
+    showMsg(msg);
+    console.error('doLogin error:', err);
   }
-
-  sessionStorage.removeItem('veporto_auth'); // limpiar restos anteriores
-  localStorage.setItem('veporto_auth', JSON.stringify({ u: user, t: Date.now() }));
-  showMsg('Acceso concedido · redirigiendo…', true);
-  setTimeout(() => { window.location.replace('venta_semanal.html'); }, 500);
 }
 
 function setLoading(v) {
