@@ -494,7 +494,7 @@ break;case"<bookViews":;case"<bookViews>":;case"</bookViews>":break;case"<workbo
 
         <div class="card">
           <div class="card-header">
-            <div><div class="card-title">Resumen por categoría</div><div class="card-sub">Filtros aplicados · click en una categoría para ver movimientos</div></div>
+            <div><div class="card-title">Resumen por categoría</div><div class="card-sub">Filtros aplicados · click en una categoría para ver movimientos · <a href="#" id="btn-personalizar-cats" style="color:var(--accent);text-decoration:none;font-weight:600">+ Personalizar categorías</a></div></div>
           </div>
           <div class="card-body">
             <div class="cat-kpi-grid" id="cat-kpi-grid"></div>
@@ -1181,6 +1181,10 @@ function renderCategoriasTab(rows) {
     entry.deb += r.db;
     byCat.set(catId, entry);
   });
+  // Ensure ALL defined categories appear, even empty ones (so user has visible slots to work with)
+  Object.keys(CATS).forEach(catId => {
+    if (!byCat.has(catId)) byCat.set(catId, { catId, movs: [], cred: 0, deb: 0 });
+  });
 
   const totalCategorizados = rows.filter(r => MOVCATS[r.id]).length;
   const totalSinCat = rows.length - totalCategorizados;
@@ -1702,6 +1706,14 @@ document.getElementById('months-container').addEventListener('click', (e) => {
 }, true);
 
 // Cat cards click = filter by that category
+// Delegate click on personalizar button inside the Resumen header
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'btn-personalizar-cats') {
+    e.preventDefault();
+    openCategoriasModal();
+  }
+});
+
 document.getElementById('cat-kpi-grid').addEventListener('click', (e) => {
   const card = e.target.closest('[data-cat-filter]');
   if (!card) return;
